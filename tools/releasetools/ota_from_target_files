@@ -44,6 +44,9 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -e  (--extra_script)  <file>
       Insert the contents of file at the end of the update script.
 
+  --override_device <device>
+      Override device-specific asserts. Can be a comma-separated list.
+
 """
 
 import sys
@@ -75,6 +78,7 @@ OPTIONS.wipe_user_data = False
 OPTIONS.omit_prereq = False
 OPTIONS.extra_script = None
 OPTIONS.worker_threads = 3
+OPTIONS.override_device = 'auto'
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -287,7 +291,10 @@ def SignOutput(temp_zip_name, output_zip_name):
 
 
 def AppendAssertions(script, input_zip):
-  device = GetBuildProp("ro.product.device", input_zip)
+  if OPTIONS.override_device == "auto":
+    device = GetBuildProp("ro.product.device", input_zip)
+  else:
+    device = OPTIONS.override_device
   script.AssertDevice(device)
 
 
@@ -710,6 +717,8 @@ def main(argv):
       OPTIONS.extra_script = a
     elif o in ("--worker_threads"):
       OPTIONS.worker_threads = int(a)
+    elif o in ("--override_device"):
+      OPTIONS.override_device = a
     else:
       return False
     return True
@@ -722,7 +731,8 @@ def main(argv):
                                               "wipe_user_data",
                                               "no_prereq",
                                               "extra_script=",
-                                              "worker_threads="],
+                                              "worker_threads=",
+                                              "override_device="],
                              extra_option_handler=option_handler)
 
   if len(args) != 2:
