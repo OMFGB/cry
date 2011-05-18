@@ -25,8 +25,11 @@
 #
 BUILD_ID := GINGERBREAD
 
+export BUILD_ID=GRJ22
+
 # DISPLAY_BUILD_NUMBER should only be set for development branches,
 # If set, the BUILD_NUMBER (cl) is appended to the BUILD_ID for
 # a more descriptive BUILD_ID_DISPLAY, otherwise BUILD_ID_DISPLAY
 # is the same as BUILD_ID
 DISPLAY_BUILD_NUMBER := true
+
