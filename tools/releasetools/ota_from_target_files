@@ -44,6 +44,10 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -e  (--extra_script)  <file>
       Insert the contents of file at the end of the update script.
 
+  --backup <boolean>
+      Enable or disable the execution of backuptool.sh
+      Enabled by default.
+
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
 
@@ -78,6 +82,7 @@ OPTIONS.wipe_user_data = False
 OPTIONS.omit_prereq = False
 OPTIONS.extra_script = None
 OPTIONS.worker_threads = 3
+OPTIONS.backuptool = True
 OPTIONS.override_device = 'auto'
 
 def MostPopularKey(d, default):
@@ -375,6 +380,8 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   AppendAssertions(script, input_zip)
   device_specific.FullOTA_Assertions()
+  if OPTIONS.backuptool:
+    script.RunBackup("backup")
 
   script.ShowProgress(0.5, 0)
 
@@ -402,6 +409,9 @@ def WriteFullOTAPackage(input_zip, output_zip):
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
   script.ShowProgress(0.2, 0)
 
+  if OPTIONS.backuptool:
+    script.ShowProgress(0.2, 10)
+    script.RunBackup("restore")
   script.ShowProgress(0.2, 10)
   script.WriteRawImage("/boot", "boot.img")
 
@@ -718,6 +728,8 @@ def main(argv):
       OPTIONS.extra_script = a
     elif o in ("--worker_threads"):
       OPTIONS.worker_threads = int(a)
+    elif o in ("--backup"):
+      OPTIONS.backuptool = bool(a.lower() == 'true')
     elif o in ("--override_device"):
       OPTIONS.override_device = a
     else:
@@ -733,6 +745,7 @@ def main(argv):
                                               "no_prereq",
                                               "extra_script=",
                                               "worker_threads=",
+                                              "backup=",
                                               "override_device="],
                              extra_option_handler=option_handler)
 
