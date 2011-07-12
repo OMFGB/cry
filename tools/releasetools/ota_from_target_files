@@ -382,14 +382,33 @@ def WriteFullOTAPackage(input_zip, output_zip):
     script.RunBackup("backup")
 
   script.ShowProgress(0.5, 0)
-
+  script.Print("************************************************")
+  script.Print("*                                              *")
+  script.Print("*           t3hh4xx0r.com presents             *")
+  script.Print("*                                              *")
+  script.Print("*                        d8b      8            *")
+  script.Print("*       .d8b. 8d8b.d8b.  8'  .d88 88b.         *")
+  script.Print("*       8' .8 8P Y8P Y8 w8ww 8  8 8  8         *")
+  script.Print("*       `Y8P' 8   8   8  8   `Y88 88P'         *")
+  script.Print("*                            wwdP              *")
+  script.Print("*                                              *")
+  script.Print("*  Follow us @r2DoesInc @linuxmotion @xoomdev  *")
+  script.Print("*     And visit t3hh4xx0r.com for updates,     *")
+  script.Print("*            questions, or issues.             *")
+  script.Print("*                                              *")
+  script.Print("************************************************")
+  script.Print("Starting Installation...")
+  script.Print("Formatting system...")
   if OPTIONS.wipe_user_data:
     script.FormatPartition("/data")
 
   script.FormatPartition("/system")
   script.Mount("/system")
+  script.ShowProgress(0.5, 40)
+  script.Print("Extracting system files...")
   script.UnpackPackageDir("system", "/system")
-
+  script.ShowProgress(0.2, 0)
+  script.Print("Setting symlinks and permissions...")
   symlinks = CopySystemFiles(input_zip, output_zip)
   script.MakeSymlinks(symlinks)
 
@@ -404,12 +423,15 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.ShowProgress(0.2, 0)
 
   if OPTIONS.backuptool:
+    script.Print("Restoring Google Apps...")
     script.ShowProgress(0.2, 10)
     script.RunBackup("restore")
   script.ShowProgress(0.2, 10)
+  script.Print("Writing boot.img...")
   script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.1, 0)
+  script.Print("Finished installing OMFGB, Enjoy!")
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
